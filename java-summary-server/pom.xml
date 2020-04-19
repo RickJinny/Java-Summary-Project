@@ -44,8 +44,8 @@
     <dependencies>
         <!--model依赖-->
         <dependency>
-            <groupId>com.debug.middleware.fight.one</groupId>
-            <artifactId>model</artifactId>
+            <groupId>com.rickjinny</groupId>
+            <artifactId>java-summary-model</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
