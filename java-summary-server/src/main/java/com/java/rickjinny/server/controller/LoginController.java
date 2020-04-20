@@ -90,7 +90,7 @@ public class LoginController extends AbstractController {
     }
 
     // 用户操作 - 新增用户 - 才会产生操作日志 (RabbitMQ)
-    @RequestMapping("/user/add/aop")
+    @RequestMapping("/user/add/mq")
     public BaseResponse addUserV3(@RequestBody @Validated User user, BindingResult result) {
         String checkResult = ValidatorUtil.checkResult(result);
         if (StringUtils.isNotBlank(checkResult)) {
