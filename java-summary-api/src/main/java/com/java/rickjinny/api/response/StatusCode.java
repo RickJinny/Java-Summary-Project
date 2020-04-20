@@ -3,10 +3,11 @@ package com.java.rickjinny.api.response;
 /**
  * 状态码
  */
-public enum  StatusCode {
+public enum StatusCode {
 
     SUCCESS(0, "成功"),
-    FAIL(-1, "失败");
+    FAIL(-1, "失败"),
+    INVALID_PARAMS(1001, "非法的参数！");
 
     private Integer code;
 
@@ -32,4 +33,4 @@ public enum  StatusCode {
     public void setMsg(String msg) {
         this.msg = msg;
     }
-}
+    }
