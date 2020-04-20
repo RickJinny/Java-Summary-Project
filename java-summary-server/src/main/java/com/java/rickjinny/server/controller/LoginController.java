@@ -44,7 +44,7 @@ public class LoginController extends AbstractController {
         try {
             int res = userMapper.insertSelective(user);
             if (res > 0) {
-                // 插入成功之后m 我们需要记录当前用户的操作日志
+                // 插入成功之后 我们需要记录当前用户的操作日志
                 LogApplicationEvent logApplicationEvent = new LogApplicationEvent(this, "debug",
                         "新增用户", "addUser");
                 applicationEventPublisher.publishEvent(logApplicationEvent);
@@ -65,7 +65,7 @@ public class LoginController extends AbstractController {
         }
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
-
+            userMapper.insertSelective(user);
         } catch (Exception e) {
             response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }
