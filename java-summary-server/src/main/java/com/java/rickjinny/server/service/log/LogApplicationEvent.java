@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
 import java.io.Serializable;
 
 /**
- * Spring的消息驱动模型: applicationEvent applicationListener
+ * Spring的消息驱动模型: applicationEvent applicationListener (消息事件)
  */
 @Data
 public class LogApplicationEvent extends ApplicationEvent implements Serializable {
