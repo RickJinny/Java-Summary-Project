@@ -66,8 +66,6 @@ public class LoginController extends AbstractController {
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
 
-
-
         } catch (Exception e) {
             response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }

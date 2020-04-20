@@ -61,22 +61,18 @@ public class LogAopAspect {
         String methodName = signature.getName();
         entity.setMethod(new StringBuilder(className).append(".")
                 .append(methodName).append("()").toString());
-
         // 获取请求参数
         Object[] args = joinPoint.getArgs();
         String params = new Gson().toJson(args[0]);
         entity.setParams(params);
-
         // 获取剩下的参数
         entity.setTime(time);
         entity.setUsername(Constant.logOperateUser);
         entity.setCreateDate(DateTime.now().toDate());
-
         // 方法的执行结果
         if (res != null && StringUtils.isNotBlank(res.toString())) {
             entity.setMemo(new Gson().toJson(res));
         }
-
         logService.recordLog(entity);
     }
 }
