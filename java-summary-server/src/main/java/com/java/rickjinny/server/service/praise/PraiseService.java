@@ -118,18 +118,19 @@ public class PraiseService {
     //缓存取消点赞时的相关信息
     private void cachePraiseCancel(final PraiseDto dto) throws Exception{
         HashOperations<String, String, Set<Integer>> praiseHash = redisTemplate.opsForHash();
-        //记录点赞过当前文章的用户id列表
+        // 记录点赞过当前文章的用户id列表
         Set<Integer> uIds = praiseHash.get(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString());
         if (uIds != null && !uIds.isEmpty() && uIds.contains(dto.getUserId())) {
-            //核心操作：就是将当前用户id 从 用户id列表中移除
+            // 核心操作：就是将当前用户id, 从用户id列表中移除
             uIds.remove(dto.getUserId());
+            // 重新更新一下 praiseHash
             praiseHash.put(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString(), uIds);
         }
 
-        //缓存点赞排行榜
+        // 缓存点赞排行榜
         this.cachePraiseRank(dto, uIds.size());
 
-        //缓存用户的点赞记录(用户的维护)
+        // 缓存用户的点赞记录(用户的维护)
         this.cacheUserPraiseArticle(dto, false);
     }
 
