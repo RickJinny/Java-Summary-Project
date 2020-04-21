@@ -86,7 +86,7 @@ public class PraiseService {
         praiseHash.put(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString(), uIds);
 
         // 缓存点赞排行榜
-        this.cachePraiseRank(dto,uIds.size());
+        this.cachePraiseRank(dto, uIds.size());
 
         // 缓存用户的点赞轨迹(用户点赞过的历史文章)
         this.cacheUserPraiseArticle(dto,true);
