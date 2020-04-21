@@ -134,52 +134,45 @@ public class PraiseService {
         this.cacheUserPraiseArticle(dto, false);
     }
 
-    //获取文章详情-点赞过的用户列表-排行榜
-    public Map<String,Object> getArticleInfo(final Integer articleId, final Integer currUserId) throws Exception{
-        Map<String,Object> resMap=Maps.newHashMap();
-
-        //文章本身的信息
-        resMap.put("articleInfo~文章详情",articleMapper.selectByPK(articleId));
-
-        //获取点赞过当前文章的用户列表 ~ 需要获取用户的昵称/姓名 ~ 如果是多个的话，那么用 , 拼接 即可
-        //Key-字符串，存储至redis的标志符; Field-文章id ;Value-用户id列表
-        HashOperations<String,String,Set<Integer>> praiseHash=redisTemplate.opsForHash();
-        Set<Integer> uIds=praiseHash.get(Constant.RedisArticlePraiseHashKey,articleId.toString());
-        if (uIds!=null && !uIds.isEmpty()){
-            resMap.put("userIds~用户id列表",uIds);
-
-            String ids= Joiner.on(",").join(uIds);
-            resMap.put("userNames~用户姓名列表",userMapper.selectNamesById(ids));
-
+    // 获取文章详情-点赞过的用户列表-排行榜
+    public Map<String, Object> getArticleInfo(final Integer articleId, final Integer currUserId) throws Exception {
+        Map<String, Object> resMap = Maps.newHashMap();
+        // 文章本身的信息
+        resMap.put("articleInfo~文章详情", articleMapper.selectByPK(articleId));
+        // 获取点赞过当前文章的用户列表 ~ 需要获取用户的昵称/姓名 ~ 如果是多个的话，那么用 , 拼接 即可
+        // Key-字符串，存储至redis的标志符; Field-文章id ; Value-用户id列表
+        HashOperations<String, String, Set<Integer>> praiseHash = redisTemplate.opsForHash();
+        Set<Integer> uIds = praiseHash.get(Constant.RedisArticlePraiseHashKey, articleId.toString());
+        if (uIds != null && !uIds.isEmpty()) {
+            resMap.put("userIds~用户id列表", uIds);
+            String ids = Joiner.on(",").join(uIds);
+            resMap.put("userNames~用户姓名列表", userMapper.selectNamesById(ids));
             //当前用户currUserId是否点赞过当前文章(其实就是 判断是否存在于集合set里面)
-            if (currUserId!=null){
-                resMap.put("currUserHasPraise-当前用户是否点赞文章",uIds.contains(currUserId));
+            if (currUserId != null) {
+                resMap.put("currUserHasPraise-当前用户是否点赞文章", uIds.contains(currUserId));
             }
         }
 
-        //获取点赞排行榜-根据点赞数的高低排行榜
-        List<ArticlePraiseRankDto> ranks=Lists.newLinkedList();
-        ZSetOperations<String,String> praiseSort=redisTemplate.opsForZSet();
-        Long total=praiseSort.size(Constant.RedisArticlePraiseSortKey);
-        Set<String> set=praiseSort.reverseRange(Constant.RedisArticlePraiseSortKey,0L,total);
-        if (set!=null && !set.isEmpty()){
+        // 获取点赞排行榜-根据点赞数的高低排行榜
+        List<ArticlePraiseRankDto> ranks = Lists.newLinkedList();
+        ZSetOperations<String, String> praiseSort = redisTemplate.opsForZSet();
+        Long total = praiseSort.size(Constant.RedisArticlePraiseSortKey);
+        Set<String> set = praiseSort.reverseRange(Constant.RedisArticlePraiseSortKey, 0L, total);
+        if (set != null && !set.isEmpty()) {
             set.forEach(value -> {
-                Double score=praiseSort.score(Constant.RedisArticlePraiseSortKey,value);
-
-                if (score>0){
+                Double score = praiseSort.score(Constant.RedisArticlePraiseSortKey, value);
+                if (score > 0) {
                     //比如：2-Redis实战二-hash实战
-                    Integer pos= StringUtils.indexOf(value,SplitChar);
-                    if (pos>0){
-                        String aId=StringUtils.substring(value,0,pos);
-                        String aTitle=StringUtils.substring(value,pos+1);
-
-                        ranks.add(new ArticlePraiseRankDto(aId,aTitle,score.toString(),score));
+                    Integer pos = StringUtils.indexOf(value, SplitChar);
+                    if (pos > 0) {
+                        String aId = StringUtils.substring(value, 0, pos);
+                        String aTitle = StringUtils.substring(value, pos + 1);
+                        ranks.add(new ArticlePraiseRankDto(aId, aTitle, score.toString(), score));
                     }
                 }
             });
         }
-        resMap.put("articlePraiseRanks~根据点赞数高低得到文章的排行榜",ranks);
-
+        resMap.put("articlePraiseRanks~根据点赞数高低得到文章的排行榜", ranks);
         return resMap;
     }
 

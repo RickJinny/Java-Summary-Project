@@ -73,18 +73,19 @@ public class PraiseController {
         return response;
     }
 
-    //获取文章详情~排行榜
-    @RequestMapping(value = "info",method = RequestMethod.GET)
-    public BaseResponse articleInfo(@RequestParam Integer articleId, Integer currUserId){
-        if (articleId==null || articleId<=0){
+    /**
+     * 获取文章详情~排行榜
+     */
+    @RequestMapping(value = "info", method = RequestMethod.GET)
+    public BaseResponse articleInfo(@RequestParam Integer articleId, Integer currUserId) {
+        if (articleId == null || articleId <= 0) {
             return new BaseResponse(StatusCode.INVALID_PARAMS);
         }
-        BaseResponse response=new BaseResponse(StatusCode.SUCCESS);
+        BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
-            response.setData(praiseService.getArticleInfo(articleId,currUserId));
-
-        }catch (Exception e){
-            response=new BaseResponse(StatusCode.FAIL.getCode(),e.getMessage());
+            response.setData(praiseService.getArticleInfo(articleId, currUserId));
+        } catch (Exception e) {
+            response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }
         return response;
     }
