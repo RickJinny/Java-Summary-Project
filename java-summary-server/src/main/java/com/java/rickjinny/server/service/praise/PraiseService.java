@@ -147,6 +147,7 @@ public class PraiseService {
             resMap.put("userIds~用户id列表", uIds);
             String ids = Joiner.on(",").join(uIds);
             resMap.put("userNames~用户姓名列表", userMapper.selectNamesById(ids));
+
             //当前用户currUserId是否点赞过当前文章(其实就是 判断是否存在于集合set里面)
             if (currUserId != null) {
                 resMap.put("currUserHasPraise-当前用户是否点赞文章", uIds.contains(currUserId));
