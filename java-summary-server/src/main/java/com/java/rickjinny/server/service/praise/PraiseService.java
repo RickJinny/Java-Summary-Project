@@ -95,19 +95,18 @@ public class PraiseService {
     //取消点赞
     @Transactional(rollbackFor = Exception.class)
     public Boolean praiseCancel(PraiseDto dto) throws Exception{
-        final String recordKey=Constant.RedisArticlePraiseUser+dto.getUserId()+dto.getArticleId();
-
-        //查看当前用户是否已经点赞过当前文章：只有点赞过当前文章，才能取消点赞
-        Boolean hasPraise=redisTemplate.hasKey(recordKey);
-        if (hasPraise){
+        final String recordKey = Constant.RedisArticlePraiseUser + dto.getUserId() + dto.getArticleId();
+        // 查看当前用户是否已经点赞过当前文章：只有点赞过当前文章，才能取消点赞
+        Boolean hasPraise = redisTemplate.hasKey(recordKey);
+        if (hasPraise) {
             //移除掉db中的记录
-            int res=praiseMapper.cancelPraise(dto.getArticleId(),dto.getUserId());
-            if (res>0){
+            int res = praiseMapper.cancelPraise(dto.getArticleId(), dto.getUserId());
+            if (res > 0) {
                 //移除缓存中：用户的点赞文章记录
                 redisTemplate.delete(recordKey);
 
                 //更新文章的点赞总数
-                articleMapper.updatePraiseTotal(dto.getArticleId(),-1);
+                articleMapper.updatePraiseTotal(dto.getArticleId(), -1);
 
                 //缓存取消点赞相关的信息
                 cachePraiseCancel(dto);
@@ -118,25 +117,21 @@ public class PraiseService {
 
     //缓存取消点赞时的相关信息
     private void cachePraiseCancel(final PraiseDto dto) throws Exception{
-        HashOperations<String,String,Set<Integer>> praiseHash=redisTemplate.opsForHash();
-
+        HashOperations<String, String, Set<Integer>> praiseHash = redisTemplate.opsForHash();
         //记录点赞过当前文章的用户id列表
-        Set<Integer> uIds=praiseHash.get(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString());
-        if (uIds!=null && !uIds.isEmpty() && uIds.contains(dto.getUserId()) ){
+        Set<Integer> uIds = praiseHash.get(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString());
+        if (uIds != null && !uIds.isEmpty() && uIds.contains(dto.getUserId())) {
             //核心操作：就是将当前用户id 从 用户id列表中移除
             uIds.remove(dto.getUserId());
-            praiseHash.put(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString(),uIds);
+            praiseHash.put(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString(), uIds);
         }
 
         //缓存点赞排行榜
-        this.cachePraiseRank(dto,uIds.size());
+        this.cachePraiseRank(dto, uIds.size());
 
         //缓存用户的点赞记录(用户的维护)
-        this.cacheUserPraiseArticle(dto,false);
-
+        this.cacheUserPraiseArticle(dto, false);
     }
-
-
 
     //获取文章详情-点赞过的用户列表-排行榜
     public Map<String,Object> getArticleInfo(final Integer articleId, final Integer currUserId) throws Exception{

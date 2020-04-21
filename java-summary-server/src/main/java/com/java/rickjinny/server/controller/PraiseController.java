@@ -55,20 +55,20 @@ public class PraiseController {
         return response;
     }
 
-
-    //取消点赞文章
+    /**
+     * 取消点赞文章
+     */
     @RequestMapping(value = "cancel",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BaseResponse praiseCancel(@RequestBody @Validated PraiseDto dto, BindingResult result){
-        String checkRes= ValidatorUtil.checkResult(result);
+        String checkRes = ValidatorUtil.checkResult(result);
         if (StringUtils.isNotBlank(checkRes)){
             return new BaseResponse(StatusCode.INVALID_PARAMS.getCode(),checkRes);
         }
-        BaseResponse response=new BaseResponse(StatusCode.SUCCESS);
+        BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
             response.setData(praiseService.praiseCancel(dto));
-
-        }catch (Exception e){
-            response=new BaseResponse(StatusCode.FAIL.getCode(),e.getMessage());
+        } catch (Exception e) {
+            response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }
         return response;
     }
