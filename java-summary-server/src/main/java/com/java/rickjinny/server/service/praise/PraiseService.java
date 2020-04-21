@@ -154,13 +154,16 @@ public class PraiseService {
             }
         }
 
-        // 获取点赞排行榜-根据点赞数的高低排行榜
+        // 获取点赞排行榜 - 根据点赞数的高低排行榜
         List<ArticlePraiseRankDto> ranks = Lists.newLinkedList();
         ZSetOperations<String, String> praiseSort = redisTemplate.opsForZSet();
+        // 获取点赞排行榜的条数
         Long total = praiseSort.size(Constant.RedisArticlePraiseSortKey);
+        // 对点赞排行榜进行排序（倒排）
         Set<String> set = praiseSort.reverseRange(Constant.RedisArticlePraiseSortKey, 0L, total);
         if (set != null && !set.isEmpty()) {
             set.forEach(value -> {
+                // 获取文章的点赞数
                 Double score = praiseSort.score(Constant.RedisArticlePraiseSortKey, value);
                 if (score > 0) {
                     //比如：2-Redis实战二-hash实战
@@ -178,7 +181,7 @@ public class PraiseService {
     }
 
     // 缓存点赞排行榜（SortedSet; ZSet）~ value=文章id-文章标题 ~ score=点赞总数 - 开发的逻辑需要适用于“点赞”与“取消点赞”
-    private void cachePraiseRank(final PraiseDto dto,final Integer total){
+    private void cachePraiseRank(final PraiseDto dto, final Integer total) {
         String value = dto.getArticleId() + SplitChar + dto.getTitle();
         ZSetOperations<String, String> praiseSort = redisTemplate.opsForZSet();
         // 为了增量更新，需要移除旧的值
@@ -186,7 +189,6 @@ public class PraiseService {
         // 塞入文章-点赞数据
         praiseSort.add(Constant.RedisArticlePraiseSortKey, value, total.doubleValue());
     }
-
 
     /**
      * 以用户为维度，缓存用户点赞过的历史文章
