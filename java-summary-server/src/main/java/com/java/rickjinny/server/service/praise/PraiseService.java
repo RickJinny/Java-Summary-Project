@@ -207,36 +207,35 @@ public class PraiseService {
         }
     }
 
-    //以用户为维度~获取用户详情以及点赞过的历史文章
-    public Map<String,Object> getUserArticles(final Integer currUserId) throws Exception{
-        Map<String,Object> resMap= Maps.newHashMap();
+    // 以用户为维度~获取用户详情以及点赞过的历史文章
+    public Map<String, Object> getUserArticles(final Integer currUserId) throws Exception {
+        Map<String, Object> resMap = Maps.newHashMap();
 
-        //用户的详情-直接查询db
-        resMap.put("userInfo-用户详情",userMapper.selectByPrimaryKey(currUserId));
+        // 用户的详情-直接查询db
+        resMap.put("userInfo-用户详情", userMapper.selectByPrimaryKey(currUserId));
 
-        //获取用户点赞过的历史文章
-        List<PraiseDto> userPraiseArticles= Lists.newLinkedList();
+        // 获取用户点赞过的历史文章
+        List<PraiseDto> userPraiseArticles = Lists.newLinkedList();
 
-        HashOperations<String,String,String> hash=redisTemplate.opsForHash();
-        //field-value对
-        Map<String,String> map=hash.entries(Constant.RedisArticleUserPraiseKey);
-        for (Map.Entry<String,String> entry:map.entrySet()){
-            //field=用户id - 文章id；value=文章标题
-            String field=entry.getKey();
-            String value=entry.getValue();
+        HashOperations<String, String, String> hash = redisTemplate.opsForHash();
+        // field-value对
+        Map<String, String> map = hash.entries(Constant.RedisArticleUserPraiseKey);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            // field=用户id - 文章id; value=文章标题
+            String field = entry.getKey();
+            String value = entry.getValue();
 
-            String[] arr=StringUtils.split(field,SplitChar);
+            String[] arr = StringUtils.split(field, SplitChar);
 
-            //判断 value是否为空-如果为空，则代表用户已经取消点赞
-            if (StringUtils.isNotBlank(value)){
-                //筛选、过滤、检索出 当前用户id 的文章
-                if (currUserId.toString().equals(arr[0])){
-                    userPraiseArticles.add(new PraiseDto(currUserId,Integer.valueOf(arr[1]),value));
+            // 判断 value是否为空-如果为空，则代表用户已经取消点赞
+            if (StringUtils.isNotBlank(value)) {
+                // 筛选、过滤、检索出 当前用户id 的文章
+                if (currUserId.toString().equals(arr[0])) {
+                    userPraiseArticles.add(new PraiseDto(currUserId, Integer.valueOf(arr[1]), value));
                 }
             }
         }
-        resMap.put("userPraiseArticles-用户点赞过的历史文章",userPraiseArticles);
-
+        resMap.put("userPraiseArticles-用户点赞过的历史文章", userPraiseArticles);
         return resMap;
     }
 }

@@ -90,18 +90,19 @@ public class PraiseController {
         return response;
     }
 
-    //获取用户点赞过的历史文章-用户详情
-    @RequestMapping(value = "user/articles",method = RequestMethod.GET)
-    public BaseResponse userArticles(@RequestParam Integer currUserId){
-        if (currUserId==null || currUserId<=0){
+    /**
+     * 获取用户点赞过的历史文章-用户详情
+     */
+    @RequestMapping(value = "user/articles", method = RequestMethod.GET)
+    public BaseResponse userArticles(@RequestParam Integer currUserId) {
+        if (currUserId == null || currUserId <= 0) {
             return new BaseResponse(StatusCode.INVALID_PARAMS);
         }
-        BaseResponse response=new BaseResponse(StatusCode.SUCCESS);
+        BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
             response.setData(praiseService.getUserArticles(currUserId));
-
-        }catch (Exception e){
-            response=new BaseResponse(StatusCode.FAIL.getCode(),e.getMessage());
+        } catch (Exception e) {
+            response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }
         return response;
     }
