@@ -51,21 +51,19 @@ public class PraiseService {
     //点赞文章
     @Transactional(rollbackFor = Exception.class)
     public Boolean praiseOn(PraiseDto dto) throws Exception{
-        //将基于redis的缓存判断 (redis的命令：setNX)
+        // 将基于 redis 的缓存判断 (redis的命令：setNX)
         final String recordKey = Constant.RedisArticlePraiseUser + dto.getUserId() + dto.getArticleId();
-
-        //TODO:setIfAbsent可以解决并发安全性问题(原子性操作)
-        //TODO:注意(当开启事务支持或者管道通信时，调用setIfAbsent()会返回Null)
-        Boolean canPraise=redisTemplate.opsForValue().setIfAbsent(recordKey,1);
+        // TODO: setIfAbsent 可以解决并发安全性问题(原子性操作)
+        // TODO: 注意(当开启事务支持或者管道通信时，调用 setIfAbsent() 会返回 Null)
+        Boolean canPraise = redisTemplate.opsForValue().setIfAbsent(recordKey, 1);
         if (canPraise) {
-            //将点赞的数据插入DB
-            ArticlePraise entity=new ArticlePraise(dto.getArticleId(),dto.getUserId(), DateTime.now().toDate());
-            int res=praiseMapper.insertSelective(entity);
-            if (res>0){
-                //叠加当前文章的点赞总数
-                articleMapper.updatePraiseTotal(dto.getArticleId(),1);
-
-                //缓存点赞的相关数据
+            // 将点赞的数据插入 DB
+            ArticlePraise entity = new ArticlePraise(dto.getArticleId(), dto.getUserId(), DateTime.now().toDate());
+            int res = praiseMapper.insertSelective(entity);
+            if (res > 0) {
+                // 叠加当前文章的点赞总数
+                articleMapper.updatePraiseTotal(dto.getArticleId(), 1);
+                // 缓存点赞的相关数据
                 cachePraiseOn(dto);
             }
         }
@@ -74,10 +72,10 @@ public class PraiseService {
 
     //缓存点赞相关的信息
     private void cachePraiseOn(final PraiseDto dto) throws Exception{
-        //选择的数据结构是Hash： Key-字符串，存储至redis的标志符; Field-文章id ;Value-用户id列表
-        HashOperations<String,String, Set<Integer>> praiseHash=redisTemplate.opsForHash();
+        // 选择的数据结构是Hash： Key-字符串，存储至redis的标志符; Field-文章id ;Value-用户id列表
+        HashOperations<String, String, Set<Integer>> praiseHash = redisTemplate.opsForHash();
 
-        //记录点赞过当前文章的用户id列表
+        // 记录点赞过当前文章的用户id列表
         Set<Integer> uIds=praiseHash.get(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString());
         if (uIds==null || uIds.isEmpty()){
             uIds= Sets.newHashSet();
@@ -85,14 +83,12 @@ public class PraiseService {
         uIds.add(dto.getUserId());
         praiseHash.put(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString(),uIds);
 
-        //缓存点赞排行榜
+        // 缓存点赞排行榜
         this.cachePraiseRank(dto,uIds.size());
 
-        //缓存用户的点赞轨迹(用户点赞过的历史文章)
+        // 缓存用户的点赞轨迹(用户点赞过的历史文章)
         this.cacheUserPraiseArticle(dto,true);
-
     }
-
 
     //取消点赞
     @Transactional(rollbackFor = Exception.class)

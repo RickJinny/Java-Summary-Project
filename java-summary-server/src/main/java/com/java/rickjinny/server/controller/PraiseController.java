@@ -36,20 +36,21 @@ public class PraiseController {
         return response;
     }
 
-    //点赞文章
-    @RequestMapping(value = "on",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BaseResponse praiseOn(@RequestBody @Validated PraiseDto dto, BindingResult result){
-        String checkRes= ValidatorUtil.checkResult(result);
-        if (StringUtils.isNotBlank(checkRes)){
-            return new BaseResponse(StatusCode.INVALID_PARAMS.getCode(),checkRes);
+    /**
+     * 点赞文章
+     */
+    @RequestMapping(value = "on", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BaseResponse praiseOn(@RequestBody @Validated PraiseDto dto, BindingResult result) {
+        String checkRes = ValidatorUtil.checkResult(result);
+        if (StringUtils.isNotBlank(checkRes)) {
+            return new BaseResponse(StatusCode.INVALID_PARAMS.getCode(), checkRes);
         }
-        BaseResponse response=new BaseResponse(StatusCode.SUCCESS);
+        BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
             response.setData(praiseService.praiseOn(dto));
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            response=new BaseResponse(StatusCode.INVALID_PARAMS.getCode(),e.getMessage());
+            response = new BaseResponse(StatusCode.INVALID_PARAMS.getCode(), e.getMessage());
         }
         return response;
     }
