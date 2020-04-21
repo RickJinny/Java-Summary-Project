@@ -72,16 +72,18 @@ public class PraiseService {
 
     //缓存点赞相关的信息
     private void cachePraiseOn(final PraiseDto dto) throws Exception{
-        // 选择的数据结构是Hash： Key-字符串，存储至redis的标志符; Field-文章id ;Value-用户id列表
+        // 选择的数据结构是Hash: Key - 字符串，存储至 redis 的标志符; Field -文章id ; Value -用户 id 列表
         HashOperations<String, String, Set<Integer>> praiseHash = redisTemplate.opsForHash();
 
-        // 记录点赞过当前文章的用户id列表
-        Set<Integer> uIds=praiseHash.get(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString());
-        if (uIds==null || uIds.isEmpty()){
-            uIds= Sets.newHashSet();
+        // 记录点赞过当前文章的用户 id 列表
+        Set<Integer> uIds = praiseHash.get(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString());
+        if (uIds == null || uIds.isEmpty()) {
+            uIds = Sets.newHashSet();
         }
+        // 把新的用户添加进去
         uIds.add(dto.getUserId());
-        praiseHash.put(Constant.RedisArticlePraiseHashKey,dto.getArticleId().toString(),uIds);
+        // 再把新的数据 put 进 HashOperations 中
+        praiseHash.put(Constant.RedisArticlePraiseHashKey, dto.getArticleId().toString(), uIds);
 
         // 缓存点赞排行榜
         this.cachePraiseRank(dto,uIds.size());
@@ -185,35 +187,33 @@ public class PraiseService {
         return resMap;
     }
 
-    //缓存点赞排行榜（SortedSet;ZSet）~ value=文章id-文章标题 ~ score=点赞总数 - 开发的逻辑需要适用于“点赞”与“取消点赞”
+    // 缓存点赞排行榜（SortedSet; ZSet）~ value=文章id-文章标题 ~ score=点赞总数 - 开发的逻辑需要适用于“点赞”与“取消点赞”
     private void cachePraiseRank(final PraiseDto dto,final Integer total){
-        String value=dto.getArticleId()+SplitChar+dto.getTitle();
-        ZSetOperations<String,String> praiseSort=redisTemplate.opsForZSet();
-        //为了增量更新，需要移除旧的值
-        praiseSort.remove(Constant.RedisArticlePraiseSortKey,value);
-        //塞入文章-点赞数据
-        praiseSort.add(Constant.RedisArticlePraiseSortKey,value,total.doubleValue());
+        String value = dto.getArticleId() + SplitChar + dto.getTitle();
+        ZSetOperations<String, String> praiseSort = redisTemplate.opsForZSet();
+        // 为了增量更新，需要移除旧的值
+        praiseSort.remove(Constant.RedisArticlePraiseSortKey, value);
+        // 塞入文章-点赞数据
+        praiseSort.add(Constant.RedisArticlePraiseSortKey, value, total.doubleValue());
     }
 
 
     /**
      * 以用户为维度，缓存用户点赞过的历史文章
-     * key=存储至redis的标志符；field=用户id-文章id；value=文章标题
+     * key = 存储至 redis 的标志符;  field = 用户id - 文章id;  value = 文章标题
+     *
      * @param dto
-     * @param isOn true=点赞，直接存储；false=取消点赞，重置value为null/""
+     * @param isOn true = 点赞, 直接存储;  false = 取消点赞, 重置 value 为 null / ""
      */
-    private void cacheUserPraiseArticle(final PraiseDto dto,Boolean isOn){
-        final String field=dto.getUserId()+SplitChar+dto.getArticleId();
-
-        HashOperations<String,String,String> hash=redisTemplate.opsForHash();
-        if (isOn){
-            hash.put(Constant.RedisArticleUserPraiseKey,field,dto.getTitle());
-        }else{
-            hash.put(Constant.RedisArticleUserPraiseKey,field,"");
+    private void cacheUserPraiseArticle(final PraiseDto dto, Boolean isOn) {
+        final String field = dto.getUserId() + SplitChar + dto.getArticleId();
+        HashOperations<String, String, String> hash = redisTemplate.opsForHash();
+        if (isOn) {
+            hash.put(Constant.RedisArticleUserPraiseKey, field, dto.getTitle());
+        } else {
+            hash.put(Constant.RedisArticleUserPraiseKey, field, "");
         }
-
     }
-
 
     //以用户为维度~获取用户详情以及点赞过的历史文章
     public Map<String,Object> getUserArticles(final Integer currUserId) throws Exception{
