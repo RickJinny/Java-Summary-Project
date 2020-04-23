@@ -58,37 +58,36 @@ public class MessageCodeScheduler {
         }
     }
 
-    //redis的key过期失效-定时任务执行
+    /**
+     * redis 的 key 过期失效 - 定时任务执行
+     */
     @Async("threadPoolTaskExecutor")
     //@Scheduled(cron = "0/30 * * * * ?")
     @Scheduled(cron = "0 0/30 * * * ?")
     public void schedulerCheckCodeV2(){
         try {
-            List<SendRecord> list=recordMapper.selectAllActiveCodes();
-            Set<Integer> ids=Sets.newHashSet();
-
-            if (list!=null && !list.isEmpty()){
+            List<SendRecord> list = recordMapper.selectAllActiveCodes();
+            Set<Integer> ids = Sets.newHashSet();
+            if (list != null && !list.isEmpty()) {
                 list.forEach(code -> {
-                    if (StringUtils.isNotBlank(code.getPhone())){
-                        if (!redisTemplate.hasKey(Constant.RedisMsgCodeKey+code.getPhone())){
-                            int res=recordMapper.updateExpireCode(code.getId());
-
-                            if (res>0){
+                    if (StringUtils.isNotBlank(code.getPhone())) {
+                        if (!redisTemplate.hasKey(Constant.RedisMsgCodeKey + code.getPhone())) {
+                            int res = recordMapper.updateExpireCode(code.getId());
+                            if (res > 0) {
                                 ids.add(code.getId());
                             }
                         }
                     }
-
                 });
             }
-            //发送mq消息，记录日志-以便管理员查询
-            if (ids!=null && !ids.isEmpty()){
-                String idArr=Joiner.on(",").join(ids);
+            // 发送 mq 消息，记录日志 - 以便管理员查询
+            if (ids != null && !ids.isEmpty()) {
+                String idArr = Joiner.on(",").join(ids);
                 recordMapper.updateTimeoutCode(idArr);
-                commonService.recordLog(idArr,"redis的key过期失效-定时任务执行-mq","schedulerCheckCodeV2");
+                commonService.recordLog(idArr, "redis 的 key 过期失效-定时任务执行-mq", "schedulerCheckCodeV2");
             }
         }catch (Exception e){
-            log.error("redis的key过期失效-定时任务执行-发生异常：",e);
+            log.error("redis的key过期失效-定时任务执行-发生异常：", e);
         }
     }
 }

@@ -68,12 +68,8 @@ public class MessageCodeService {
         return record != null;
     }
 
-
     /**
-     * 获取短信验证码-传统的方式:redis的key过期失效+定时任务调度检测
-     * @param phone
-     * @return
-     * @throws Exception
+     * 获取短信验证码 - 传统的方式: redis的 key 过期失效 + 定时任务调度检测
      */
     public String getRandomCodeV2(final String phone) throws Exception{
         ValueOperations<String, String> phoneOpera = redisTemplate.opsForValue();
@@ -88,7 +84,6 @@ public class MessageCodeService {
 
         //否则的话，重新生成新的 4位短信验证码
         String msgCode = RandomUtil.randomMsgCode(4);
-
         SendRecord entity = new SendRecord(phone, msgCode);
         entity.setSendTime(DateTime.now().toDate());
         int res = recordMapper.insertSelective(entity);
