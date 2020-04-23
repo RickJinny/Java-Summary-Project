@@ -40,7 +40,7 @@ public class NoticeController extends AbstractController {
         try {
             int res = noticeMapper.insertSelective(notice);
             if (res > 0) {
-                //生产者发布消息-pub
+                // 生产者发布消息 - pub
                 redisTemplate.convertAndSend(Constant.RedisTopicNameEmail, notice);
             }
         }catch (Exception e){
