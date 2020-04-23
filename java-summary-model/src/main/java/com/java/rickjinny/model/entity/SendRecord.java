@@ -15,7 +15,7 @@ public class SendRecord implements Serializable{
 
     private String code;
 
-    private Byte isActive=1;
+    private Byte isActive = 1;
 
     private Date sendTime;
 

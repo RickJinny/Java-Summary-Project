@@ -91,7 +91,6 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-
   <!--根据手机号和验证码查询；验证码可以没有->比如同个手机号多次申请的情况下，如果该手机号存在30min内有效的验证码，
   则直接取出发给他即可，而无需重新申请 -->
   <select id="selectByPhoneCode" resultType="com.java.rickjinny.model.entity.SendRecord">
