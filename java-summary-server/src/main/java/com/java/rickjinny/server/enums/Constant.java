@@ -54,11 +54,11 @@ public class Constant {
 
     public static final String SplitCharUserVip="-";
 
-    //vip会员过期前 x 天/小时/分钟/秒 进行提醒...; 即 ttl=vipDay - x;
+    // vip会员过期前 x 天/小时/分钟/秒 进行提醒...; 即 ttl=vipDay - x;
     public static final Integer x=10;
 
 
-    //用户会员到期前的多次提醒的标识
+    // 用户会员到期前的多次提醒的标识
     public enum VipExpireFlg{
 
         First(1),
