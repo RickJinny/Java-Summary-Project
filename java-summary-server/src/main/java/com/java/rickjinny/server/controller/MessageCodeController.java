@@ -27,9 +27,9 @@ public class MessageCodeController extends AbstractController {
         }
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
-            response.setData(messageCodeService.getRandomCodeV1(phone));
+            //response.setData(messageCodeService.getRandomCodeV1(phone));
             //response.setData(messageCodeService.getRandomCodeV2(phone));
-            //response.setData(messageCodeService.getRandomCodeV3(phone));
+            response.setData(messageCodeService.getRandomCodeV3(phone));
         }catch (Exception e){
             response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
         }

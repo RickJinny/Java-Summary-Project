@@ -11,8 +11,7 @@
     <artifactId>java-summary-server</artifactId>
 
     <properties>
-        <start-class>com.debug.middleware.fight.one.server.MainApplication</start-class>
-
+        <start-class>com.java.rickjinny.server.MainApplication</start-class>
         <spring-boot.version>2.0.5.RELEASE</spring-boot.version>
         <slf4j.version>1.7.13</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
