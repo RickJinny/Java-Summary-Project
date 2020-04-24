@@ -2,10 +2,10 @@ package com.java.rickjinny.server.service.uservip;/**
  * Created by Administrator on 2020/3/18.
  */
 
-import com.debug.middleware.fight.one.model.entity.UserVip;
-import com.debug.middleware.fight.one.model.mapper.UserVipMapper;
-import com.debug.middleware.fight.one.server.enums.Constant;
-import com.debug.middleware.fight.one.server.service.mail.MailService;
+import com.java.rickjinny.model.entity.UserVip;
+import com.java.rickjinny.model.mapper.UserVipMapper;
+import com.java.rickjinny.server.enums.Constant;
+import com.java.rickjinny.server.service.mail.MailService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RedissonClient;
@@ -75,9 +75,6 @@ public class UserVipQueueListener {
         }
 
     }
-
-
-
 }
 
 

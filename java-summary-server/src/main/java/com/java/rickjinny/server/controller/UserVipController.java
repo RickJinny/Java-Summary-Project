@@ -31,8 +31,8 @@ public class UserVipController extends AbstractController {
         }
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
         try {
-            vipService.addVip(vip);
-//            vipService.addVipV2(vip);
+//            vipService.addVip(vip);
+            vipService.addVipV2(vip);
         } catch (Exception e) {
             logger.error("--充值会员-发生异常：", e.fillInStackTrace());
             response = new BaseResponse(StatusCode.FAIL.getCode(), e.getMessage());
