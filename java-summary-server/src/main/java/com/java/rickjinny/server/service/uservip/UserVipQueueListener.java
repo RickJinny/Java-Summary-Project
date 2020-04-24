@@ -40,7 +40,6 @@ public class UserVipQueueListener {
     @Autowired
     private Environment env;
 
-
     //近实时监听延迟队列中的待处理消息
     @Async("threadPoolTaskExecutor")
     @Scheduled(cron = "0/5 * * * * ?")
